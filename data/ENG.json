@@ -2,7 +2,7 @@
 "tab":["Chart","Time","Transmitters", "Options"],
 "text_sh":["Dawn","Sunset","from","to","from","to"],
 "text_h":["Date:","Time:","Timezone [GMT+]:","MO:","TU:","WE:","TH:","FR:","SA:","SU:","Temperature correction:","Max bright:","Min bright:",
-"Fan on:","Fan off:","Heater on:","Heater off:","Create AP:","Connect to WIFI:","Firmware update *.BIN:","Restart controller ESP8266-12E:","Restart ESP8266-12E?"],
+"Fan on:","Fan off:","Heater on:","Heater off:","Create AP:","Connect to WIFI:","Port","Firmware update *.BIN:","Restart controller ESP8266-12E:","Restart ESP8266-12E?"],
 "but":["Loading...","Successful","Error","Default state","Manual enter","Autosync","Save schedule","Save","Open","Upload","Restart"],
 "mes":["FAILURE","RTC FAILURE","RTC ERROR"]
 }
