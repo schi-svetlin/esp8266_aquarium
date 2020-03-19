@@ -33,7 +33,6 @@ void setup() {
   udp.begin(localPort);
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
-  ftpSrv.begin("esp", "esp");
 }
 
 //==========================================================================================================
@@ -45,5 +44,4 @@ void loop() {
   dnsServer.processNextRequest();
   measure_t();
   webSocket.loop();
-  ftpSrv.handleFTP();
 }

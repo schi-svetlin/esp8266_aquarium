@@ -10,6 +10,15 @@ void FS_init(void) {
   }
   server.on("/readValues", handleValues);
   server.on("/restart", handle_restart);
+  server.on("/list", HTTP_GET, handleFileList);
+  server.on("/edit", HTTP_GET, []() {
+    if (!handleFileRead("/edit.htm")) server.send(404, "text/plain", "FileNotFound");
+  });
+  server.on("/edit", HTTP_PUT, handleFileCreate);
+  server.on("/edit", HTTP_DELETE, handleFileDelete);
+  server.on("/edit", HTTP_POST, []() {
+    server.send(200, "text/plain", "");
+  }, handleFileUpload);
 
   server.onNotFound([]() {
     if (!handleFileRead(server.uri()))
@@ -33,6 +42,14 @@ void FS_init(void) {
   server.on("/ssidAP", HTTP_GET, []() {
     jsonWrite(configSetup, "ssidAP", String(server.arg("ssidAP")));
     jsonWrite(configSetup, "passwordAP", String(server.arg("passwordAP")));
+    saveConfigSetup();
+    server.send(200, "text/plain", "");
+  });
+  //==========================================================================================================
+  //                                                 PORT
+  //==========================================================================================================
+  server.on("/portNumber", HTTP_GET, []() {
+    jsonWrite(configSetup, "portNumber", String(server.arg("portNumber")));
     saveConfigSetup();
     server.send(200, "text/plain", "");
   });
@@ -228,7 +245,7 @@ String getContentType(String filename) {
 }
 
 bool handleFileRead(String path) {
-  if (path.endsWith("/")) path += "index.html";
+  if (path.endsWith("/")) path += "index.htm";
   String contentType = getContentType(path);
   String pathWithGz = path + ".gz";
   if (SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)) {
@@ -240,4 +257,64 @@ bool handleFileRead(String path) {
     return true;
   }
   return false;
+}
+
+void handleFileUpload() {
+  if (server.uri() != "/edit") { return; }
+  HTTPUpload& upload = server.upload();
+  if (upload.status == UPLOAD_FILE_START) {
+    String filename = upload.filename;
+    if (!filename.startsWith("/")) { filename = "/" + filename; }
+    fsUploadFile = SPIFFS.open(filename, "w");
+    filename = String();
+  } else if (upload.status == UPLOAD_FILE_WRITE) {
+      if (fsUploadFile) { fsUploadFile.write(upload.buf, upload.currentSize); }
+  } else if (upload.status == UPLOAD_FILE_END) { 
+      if (fsUploadFile) { fsUploadFile.close(); }
+  }
+}
+
+void handleFileDelete() {
+  if (server.args() == 0) { return server.send(500, "text/plain", "BAD ARGS"); }
+  String path = server.arg(0);
+  if (path == "/") { return server.send(500, "text/plain", "BAD PATH"); }
+  if (!SPIFFS.exists(path)) { return server.send(404, "text/plain", "FileNotFound"); }
+  SPIFFS.remove(path);
+  server.send(200, "text/plain", "");
+  path = String();
+}
+
+void handleFileCreate() {
+  if (server.args() == 0) { return server.send(500, "text/plain", "BAD ARGS"); }
+  String path = server.arg(0);
+  if (path == "/") { return server.send(500, "text/plain", "BAD PATH"); }
+  if (SPIFFS.exists(path)) { return server.send(500, "text/plain", "FILE EXISTS"); }
+  File file = SPIFFS.open(path, "w");
+  if (file) { file.close(); } 
+  else { return server.send(500, "text/plain", "CREATE FAILED"); }
+  server.send(200, "text/plain", "");
+  path = String();
+}
+
+void handleFileList() {
+  if (!server.hasArg("dir")) { server.send(500, "text/plain", "BAD ARGS"); return;  }
+  String path = server.arg("dir");
+  Dir dir = SPIFFS.openDir(path);
+  path = String();
+
+  String output = "[";
+  while (dir.next()) {
+    File entry = dir.openFile("r");
+    if (output != "[") { output += ','; }
+    bool isDir = false;
+    output += "{\"type\":\"";
+    output += (isDir) ? "dir" : "file";
+    output += "\",\"name\":\"";
+    if (entry.name()[0] == '/') { output += &(entry.name()[1]); } 
+    else { output += entry.name(); }
+    output += "\"}";
+    entry.close();
+  }
+  output += "]";
+  server.send(200, "text/json", output);
 }

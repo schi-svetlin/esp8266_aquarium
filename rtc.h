@@ -46,7 +46,7 @@ void updateTimeNTP() {
   delay(1000);
   int cb = udp.parsePacket();
   if (!cb) {
-    Serial.println("no packet yet");
+    Serial.println("Can't connect to the server");
   } else {
     udp.read(packetBuffer, NTP_PACKET_SIZE);
     unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);

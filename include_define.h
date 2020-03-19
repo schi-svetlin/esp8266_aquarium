@@ -9,8 +9,6 @@
 #include <SimpleMovingAverage.h>
 #include <WebSocketsServer.h>
 #include <Hash.h>
-#include <ESP8266FtpServer.h>
-
 //================================================================================================================================
 #include <LiquidCrystal_I2C.h>
 #include <OneWire.h>
@@ -21,8 +19,9 @@
 #define TENPIN        D5
 #define LEDPIN        D6
 #define FANPIN        D7
+int portNumber = 49201;
 String f_ver = "4.2";
-const char* ver = "2.8";
+const char* ver = "2.9";
 
 static const char successResponse[] PROGMEM =
   "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...\n";
@@ -32,11 +31,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 SimpleMovingAverage avg;
 ESP8266WiFiMulti WiFiMulti;
 
-ESP8266WebServer server(80);
+ESP8266WebServer server(portNumber);
 ESP8266HTTPUpdateServer httpUpdater;
 
-WebSocketsServer webSocket = WebSocketsServer(81);
-FtpServer ftpSrv;
+WebSocketsServer webSocket = WebSocketsServer(49202);
 File fsUploadFile;
 DNSServer dnsServer;
 OneWire  ds(ONE_WIRE_BUS);
@@ -61,7 +59,7 @@ int val_zakat = 0;
 int led_bright = 0;
 int old_ds_min = 0;
 int old_ds_sec = 0;
-int randomize, rssi;
+int randomize, rssi; 
 byte nedelya;
 String date_man, time_man;
 int brightness, max_day, max_day_percent, max_night, max_night_percent, year_man;

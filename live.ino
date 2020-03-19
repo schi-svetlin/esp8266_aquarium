@@ -1,27 +1,3 @@
-void readJsonValues() {
-  jsonWrite(configSetup, "ver", ver);
-  saveConfigSetup();
-  brightness  = jsonRead(configSetup, "brightness").toInt();
-  max_day     = jsonRead(configSetup, "max_day").toInt();
-  max_night   = jsonRead(configSetup, "max_night").toInt();
-  //                  map(Value, fromLow, fromHigh, toLow, toHigh);
-  max_day_percent   = map(max_day, 0, 100, 0, 1024);
-  max_night_percent = map(max_night, 100, 0, 1024, 0);
-
-  timeZone    = jsonRead(configSetup, "timeZone").toInt();
-  temp_koef   = atof(jsonRead(configSetup, "temp_koef").c_str());
-  fan_start   = atof(jsonRead(configSetup, "fan_start").c_str());
-  fan_stop    = atof(jsonRead(configSetup, "fan_stop").c_str());
-  ten_start   = atof(jsonRead(configSetup, "ten_start").c_str());
-  ten_stop    = atof(jsonRead(configSetup, "ten_stop").c_str());
-  for (int i = 0; i <= 6; i++) {
-    time_vkl[i]      = jsonRead(configSetup, "time_vkl", i);
-    time_rassvet[i]  = jsonRead(configSetup, "time_rassvet", i);
-    time_zakat[i]    = jsonRead(configSetup, "time_zakat", i);
-    time_otkl[i]     = jsonRead(configSetup, "time_otkl", i);
-  }
-}
-
 void handleValues() {
   sprintf(date_now, "%02i.%02i.%02i | %02i:%02i:%02i",  ds_day, ds_month, ds_year, ds_hour, ds_min, ds_sec);
   String send_temp = String(round(tempC1 * 100) / 100);
