@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+<script src="chartist.min.js" charset="utf-8"></script>
+<script src ="functions.js"></script>
+
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta charset="utf-8">
+<title>ESP8266</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="header" style="height:120px; border:1px solid;background:#3370B7;width:500px;border-radius: 10px 10px 10px 10px;">
+	<div id="header_line" style="margin-bottom:10px;">
+		<span id="text_t1" style="width:15%;color:#FFFFFF;vertical-align:middle;display: table-cell;">ver: --</span>
+		<span style="font-size:26px;width:60%;color:#00FF00;vertical-align:middle;display: table-cell;">ESP8266 - AQUA</span>
+		<select name="defaultLang" id="select" class="select" onchange="changeLang(this.value)" style="">
+		</select>
+
+	</div>	
+	<div id="header_line">
+		<figure id="Picture1" class="tempna" alt=""></figure>
+		<div id="text_t2" style="text-align:left;vertical-align:middle;display:table-cell;">--.--°C</div>
+		<div id="text_t3" style="width:40%;vertical-align:middle;display:table-cell;">--.--.---- | --:--:--</div>		
+		<figure id="Picture2" class="wifi1" alt="">
+			<figcaption id="text_t4">-- dBm</figcaption>
+		</figure>
+		<figure id="Picture3" class="led_0" alt="">
+			<figcaption id="text_t5">--%</figcaption>
+		</figure>	
+		<figure id="Picture4" class="fan_0" alt=""></figure>
+		<figure id="Picture5" class="ten_0" alt=""></figure>
+	</div>
+</div>
+<div class="container-fluid" style="padding:0px;margin:0px;width:500px;">
+	<div class="row" style="padding:0px;margin:0px;">
+
+		<div class="tabs">
+			<input type="radio" name="inset" value="" id="tab_0">
+			<label for="tab_0">--</label>
+			<input type="radio" name="inset" value="" id="tab_1" checked>
+			<label for="tab_1">--</label>
+			<input type="radio" name="inset" value="" id="tab_2">
+			<label for="tab_2">--</label>
+			<input type="radio" name="inset" value="" id="tab_3">
+			<label for="tab_3">--</label>
+<!-- --------------------------------------------- FIRST TAB ------------------------------------------ -->
+			<div id="txt_1" style="width:498px">
+				<div class="ct-chart" id="chart1"></div>
+			</div>
+<!-- --------------------------------------------- SECOND TAB ------------------------------------------ -->
+			<div id="txt_2" style="width:498px">	
+<!-- --------------------------------------------- Time adjust ------------------------------------------ -->
+											<!--padding top end bottom begin-->
+				<div class="input-group" style="padding :20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text0">--:</span>
+					</div>		
+					<input type="date" id="input1" name="date_man" class="form-control input-sm">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text1">--:</span>
+					</div>		
+					<input type="time" id="input2" name="time_man" class="form-control input-sm">			
+				</div>
+				<input type="submit" id="Button1" class="btn btn-primary" value="--">		
+				<div class="input-group" style="padding:20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text2">-- [GMT+]:</span>
+					</div>		
+					<input type="number" id="input3" name="timezone" class="form-control input-sm" style="text-align:center;">
+					<div class="input-group-append">
+					<input type="submit" id="Button2" class="btn btn-primary" value="--" style="width:180px;">
+					</div>
+				</div>
+<!-- --------------------------------------------- Schedule --------------------------------------------- -->
+				<div class="input-group" style="padding-top:10px;">	
+					<h6 style="width:50px;"></h6>
+					<input type="text" id="text_sh0" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">
+					<input type="text" id="text_sh1" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">
+				</div>
+				<div class="input-group">	
+					<h6 style="width:50px;"></h6>
+					<input type="text" id="text_sh2" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">
+					<input type="text" id="text_sh3" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">
+					<input type="text" id="text_sh4" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">
+					<input type="text" id="text_sh5" name="" class="form-control input-sm" value="--" readonly style="height:22px;color:black;text-align:center;padding:0px;">	
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text3" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input4" name="" class="form-control input-sm" value="">
+					<input type="time" id="input5" name="" class="form-control input-sm" value="">
+					<input type="time" id="input6" name="" class="form-control input-sm" value="">
+					<input type="time" id="input7" name="" class="form-control input-sm" value="">		
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text4" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input8" name="" class="form-control input-sm" value="">
+					<input type="time" id="input9" name="" class="form-control input-sm" value="">
+					<input type="time" id="input10" name="" class="form-control input-sm" value="">
+					<input type="time" id="input11" name="" class="form-control input-sm" value="">
+				</div>		
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text5" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input12" name="" class="form-control input-sm" value="">
+					<input type="time" id="input13" name="" class="form-control input-sm" value="">
+					<input type="time" id="input14" name="" class="form-control input-sm" value="">
+					<input type="time" id="input15" name="" class="form-control input-sm" value="">
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text6" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input16" name="" class="form-control input-sm" value="">
+					<input type="time" id="input17" name="" class="form-control input-sm" value="">
+					<input type="time" id="input18" name="" class="form-control input-sm" value="">
+					<input type="time" id="input19" name="" class="form-control input-sm" value="">
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text7" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input20" name="" class="form-control input-sm" value="">
+					<input type="time" id="input21" name="" class="form-control input-sm" value="">
+					<input type="time" id="input22" name="" class="form-control input-sm" value="">
+					<input type="time" id="input23" name="" class="form-control input-sm" value="">
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text8" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input24" name="" class="form-control input-sm" value="">
+					<input type="time" id="input25" name="" class="form-control input-sm" value="">
+					<input type="time" id="input26" name="" class="form-control input-sm" value="">
+					<input type="time" id="input27" name="" class="form-control input-sm" value="">
+				</div>
+				<div class="input-group">	
+				  <div class="input-group-prepend">
+					<span class="input-group-text" id="text9" style="width:50px;">--:</span>
+				  </div>
+					<input type="time" id="input28" name="" class="form-control input-sm" value="">
+					<input type="time" id="input29" name="" class="form-control input-sm" value="">
+					<input type="time" id="input30" name="" class="form-control input-sm" value="">
+					<input type="time" id="input31" name="" class="form-control input-sm" value="">	
+					<input type="submit" id="Button3" class="btn btn-primary" value="--">	
+				</div>
+				
+				
+				</div> 	
+<!-- --------------------------------------------- THIRD TAB ------------------------------------------ -->	
+			<div id="txt_3" style="width:498px">	
+				<div class="input-group" style="padding:20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text10" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input32" class="form-control input-sm" style="text-align:left;">
+				</div>	
+			
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text11" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input33" class="form-control input-sm" style="text-align:left;">
+				</div>	
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text12" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input34" class="form-control input-sm" style="text-align:left;">
+				</div>	
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text13" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input35" class="form-control input-sm" style="text-align:left;">
+				</div>	
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text14" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input36" class="form-control input-sm" style="text-align:left;">
+				</div>	
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text15" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input37" class="form-control input-sm" style="text-align:left;">
+				</div>	
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text16" style="width:250px;">--:</span>
+					</div>		
+					<input type="number" id="input38" class="form-control input-sm" style="text-align:left;">
+				</div>			
+				<input type="submit" id="Button4" class="btn btn-primary" value="--">		
+			
+				</div>
+<!-- --------------------------------------------- FOURTH TAB ------------------------------------------ -->	
+			<div id="txt_4" style="width:498px">	
+				<div class="input-group" style="padding:20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text17">--:</span>
+					</div>		
+					<input type="text" id="input39" class="form-control input-sm" placeholder="ssidAP">
+					<input type="password" id="input40" class="form-control input-sm" placeholder="empty">
+				</div>
+				<input type="submit" id="Button5" class="btn btn-primary" value="--">	
+<!-- ---------------------------------------------------------------------------------------------------- -->					
+				<div class="input-group" style="padding:20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text18">--:</span>
+					</div>		
+					<input type="text" id="input41" class="form-control input-sm" placeholder="ssid">
+					<input type="password" id="input42" class="form-control input-sm" placeholder="empty">
+				</div>
+				<input type="submit" id="Button6" class="btn btn-primary" value="--">	
+<!-- ---------------------------------------------------------------------------------------------------- -->	
+				<div class="input-group" style="padding:20px 0px 0px 0px;">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="text19">--:</span>
+					</div>		
+					<input type="number" id="input43" name="portNumber" class="form-control input-sm" style="text-align:center;">
+					<div class="input-group-append">
+					<input type="submit" id="Button7" class="btn btn-primary" value="--" style="width:180px;">
+					</div>
+				</div>
+<!-- ---------------------------------------------------------------------------------------------------- -->				
+				<form method="post" action="update" enctype="multipart/form-data" style="padding:20px 0px 0px 0px;"> 
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="text20">--:</span>
+						</div>	
+						<label class="custom-file">
+							<input type="file" accept=".bin" name="FileUpload1" id="FileUpload1-file" style="display:none;">
+							<div style="text-align:center;width:150px;">
+								<span align="center" class="btn" id="Button8" style="color:white;"></span>
+							</div>
+						</label>
+						<div class="input-group-append">
+							<input type="submit" id="Button9" name="uploadFile" value="--" class="btn btn-primary" style="width:150px;">
+						</div>
+					</div>
+				</form>
+<!-- ---------------------------------------------------------------------------------------------------- -->				
+				<form method="get" action="restart" enctype="multipart/form-data" style="padding:20px 0px 0px 0px;"> 				
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="text21" style="width:350px;">--:</span>
+						</div>		
+						<input type="text" name="device" id="text22" value="1" hidden>
+						<div class="input-group-append">
+							<input type="submit" id="Button10" onclick="return confirm(restartMessage);return false;" class="btn btn-primary" style="width:150px;" value="--">
+						</div>
+					</div>
+				</form>				
+			</div>
+		</div>
+<!-- ---------------------------------------------------------------------------------------------------- -->		
+	</div>
+</div>
+</body>
+</html>
+
+

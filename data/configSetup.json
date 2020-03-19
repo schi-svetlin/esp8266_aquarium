@@ -3,6 +3,7 @@
 "password":"00853231",
 "ssidAP":"ESP8266_AQUA",
 "passwordAP":"",
+"portNumber":49201,
 "max_day":100,
 "max_night":0,
 "temp_koef":0,
@@ -19,5 +20,5 @@
 "time_man":"21:45",
 "timeZone":5,
 "defaultLang":"RUS",
-"lang":["RUS","ENG","GER","TR","FRA","FIN","TUR"]
+"lang":["RUS","ENG"]
 }
