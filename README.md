@@ -31,3 +31,11 @@
 8. D8  // Реле 2
 
 P.S.:  В этом релизе ушел от использования JQuery, так как он имеет большой обьем и увеличивает время загрузки веб страницы. В этой версии используется bootstrap 4. Также ушел от библиотеки dallas
+
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_1.jpg)
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_2.jpg)
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_3.jpg)
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_4.jpg)
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_5.jpg)
+![Иллюстрация к проекту](https://github.com/ildarmustafin/esp8266_aquarium/blob/master/photos/mini_6.jpg)
+
