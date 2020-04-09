@@ -8,7 +8,7 @@ void FS_init(void) {
     String fileName = dir.fileName();
     size_t fileSize = dir.fileSize();
   }
-  server.on("/readValues", handleValues);
+  server.on("/readValues", send_values_by_websocket);
   server.on("/restart", handle_restart);
   server.on("/list", HTTP_GET, handleFileList);
   server.on("/edit", HTTP_GET, []() {
@@ -22,7 +22,7 @@ void FS_init(void) {
 
   server.onNotFound([]() {
     if (!handleFileRead(server.uri()))
-      server.send(404, "text/plain", "FileNotFound");
+      server.send(404, "text/plain", "FileNotFound. Please upload FS to ESP8266");
 
   });
   //  jsonWrite(configSetup, "flashChip", String(ESP.getFlashChipId(), HEX));
@@ -34,22 +34,11 @@ void FS_init(void) {
   //                                                 WIFI
   //==========================================================================================================
   server.on("/ssid", HTTP_GET, []() {
-    jsonWrite(configSetup, "ssid", String(server.arg("ssid")));
-    jsonWrite(configSetup, "password", String(server.arg("password")));
-    saveConfigSetup();
-    server.send(200, "text/plain", "");
-  });
-  server.on("/ssidAP", HTTP_GET, []() {
-    jsonWrite(configSetup, "ssidAP", String(server.arg("ssidAP")));
-    jsonWrite(configSetup, "passwordAP", String(server.arg("passwordAP")));
-    saveConfigSetup();
-    server.send(200, "text/plain", "");
-  });
-  //==========================================================================================================
-  //                                                 PORT
-  //==========================================================================================================
-  server.on("/portNumber", HTTP_GET, []() {
-    jsonWrite(configSetup, "portNumber", String(server.arg("portNumber")));
+    jsonWrite(configSetup, "input", 7, String(server.arg("input[7]")));  //ssidAP
+    jsonWrite(configSetup, "input", 8, String(server.arg("input[8]")));  //ssidAP_PASS
+    jsonWrite(configSetup, "input", 9, String(server.arg("input[9]")));  //ssid
+    jsonWrite(configSetup, "input", 10, String(server.arg("input[10]")));//ssid_PASS
+    jsonWrite(configSetup, "input", 11, String(server.arg("input[11]")));//web_port  
     saveConfigSetup();
     server.send(200, "text/plain", "");
   });
@@ -118,31 +107,32 @@ void FS_init(void) {
   });
 
   //==========================================================================================================
-  //                                                 SAVE LED SCHEDULE
+  //                                                 MANUAL SYNCHRONISATION
   //==========================================================================================================
-  server.on("/save_schedule", HTTP_GET, []() {
-    for (int i = 0; i <= 6; i++) {
-      time_vkl[i]      = server.arg("time_vkl_" + String(i));
-      time_rassvet[i]  = server.arg("time_rassvet_" + String(i));
-      time_zakat[i]    = server.arg("time_zakat_" + String(i));
-      time_otkl[i]     = server.arg("time_otkl_" + String(i));
-      jsonWrite(configSetup, "time_vkl",     i, time_vkl[i]);
-      jsonWrite(configSetup, "time_rassvet", i, time_rassvet[i]);
-      jsonWrite(configSetup, "time_zakat",   i, time_zakat[i]);
-      jsonWrite(configSetup, "time_otkl",    i, time_otkl[i]);
-    }
+  server.on("/save_date", HTTP_GET, []() {
+    date_man   = server.arg("input[12]");
+    time_man   = server.arg("input[13]");
+    jsonWrite(configSetup, "input", 12, date_man);
+    jsonWrite(configSetup, "input", 13, time_man);
+    years = date_man.substring(0, 4).toInt();
+    months = date_man.substring(5, 7).toInt();
+    days = date_man.substring(8, 10).toInt();
+    hours = time_man.substring(0, 2).toInt();
+    minutes = time_man.substring(3, 5).toInt();
+    seconds = time_man.substring(6, 8).toInt();
     saveConfigSetup();
-    printLCD(1, 0, 0, "", " SAVE SCHEDULE  ", 1000);
+    rtc.adjust(DateTime(years, months, days, hours, minutes, seconds));
+    Serial.printf("Manual button pressed \nEntered time: %02d.%02d.%02i | %02d:%02d:%02d \n", days, months, years, hours, minutes, seconds);
+    printLCD(1, 0, 0, "", " MANUAL PRESSED ", 2000);
     printLCD(1, 0, 0, "", "                ", 0);
     server.send(200, "text/plain", "");
   });
-
   //==========================================================================================================
   //                                                 AUTO SYNCHRONISATION
   //==========================================================================================================
   server.on("/auto_sync", HTTP_GET, []() {
-    timeZone   = server.arg("timeZone").toInt();
-    jsonWrite(configSetup, "timeZone",   server.arg("timeZone"));
+    timeZone = server.arg("input[14]").toInt();
+    jsonWrite(configSetup, "input", 14, timeZone);
     saveConfigSetup();
     updateTimeNTP();
     if (years < 2019) {
@@ -157,61 +147,48 @@ void FS_init(void) {
       server.send(200, "text/plain", "");
     }
   });
-
   //==========================================================================================================
-  //                                                 MANUAL SYNCHRONISATION
+  //                                                 SAVE LED SCHEDULE
   //==========================================================================================================
-  server.on("/save_date", HTTP_GET, []() {
-    date_man   = server.arg("date_man");
-    time_man   = server.arg("time_man");
-    jsonWrite(configSetup, "date_man",   date_man);
-    jsonWrite(configSetup, "time_man", time_man);
-    Serial.print("date_man: ");
-    Serial.print(date_man);        
-    Serial.print(" | time_man: ");
-    Serial.println(time_man); 
-    years = date_man.substring(0, 4).toInt();
-    months = date_man.substring(5, 7).toInt();
-    days = date_man.substring(8, 10).toInt();
-    hours = time_man.substring(0, 2).toInt();
-    minutes = time_man.substring(3, 5).toInt();
+  server.on("/save_schedule", HTTP_GET, []() {
+    selIndex = server.arg("selIndex").toInt();
+    for (int b = 0; b <= 6; b++) {
+      for (int c = 0; c <= 3; c++) {
+        schedule[selIndex][b][c]= server.arg("schedule["+String(selIndex)+"]["+String(b)+"]["+String(c)+"]");
+        jsonWrite(configSetup, "schedule", selIndex, b, c, schedule[selIndex][b][c]);
+      }
+    }
     saveConfigSetup();
-    rtc.adjust(DateTime(years, months, days, hours, minutes, 50));
-    Serial.printf("Manual button pressed \nEntered time: %02d.%02d.%02i | %02d:%02d \n", days, months, years, hours, minutes);
-    printLCD(1, 0, 0, "", " MANUAL PRESSED ", 2000);
+    readJsonValues();
+    printLCD(1, 0, 0, "", " SAVE SCHEDULE  ", 1000);
     printLCD(1, 0, 0, "", "                ", 0);
     server.send(200, "text/plain", "");
-  });
-
+  });  
   //==========================================================================================================
   //                                                 SAVE TRANSMITTERS
   //==========================================================================================================
   server.on("/save", HTTP_GET, []() {
-    fan_start = atof(server.arg("fan_start").c_str());
-    fan_stop  = atof(server.arg("fan_stop").c_str());
-    ten_start = atof(server.arg("ten_start").c_str());
-    ten_stop  = atof(server.arg("ten_stop").c_str());
-    brightness   = server.arg("brightness").toInt();
-    temp_koef    = atof(server.arg("temp_koef").c_str());
-    max_day      = server.arg("max_day").toInt();
-    max_night    = server.arg("max_night").toInt();
-    jsonWrite(configSetup, "fan_start",  fan_start);
-    jsonWrite(configSetup, "fan_stop",   fan_stop);
-    jsonWrite(configSetup, "ten_start",  ten_start);
-    jsonWrite(configSetup, "ten_stop",   ten_stop);
-    jsonWrite(configSetup, "brightness", brightness);
-    jsonWrite(configSetup, "temp_koef",  temp_koef);
-    jsonWrite(configSetup, "max_day",    max_day);
-    jsonWrite(configSetup, "max_night",  max_night);
+  //atof(server.arg("fan_start").c_str());
+    temp_koef = server.arg("input[0]").toFloat();
+    max_day   = server.arg("input[1]").toInt();
+    max_night = server.arg("input[2]").toInt();
+    fan_start = server.arg("input[3]").toFloat();
+    fan_stop  = server.arg("input[4]").toFloat();
+    ten_start = server.arg("input[5]").toFloat();
+    ten_stop  = server.arg("input[6]").toFloat();
+    jsonWrite(configSetup, "input", 0, temp_koef);
+    jsonWrite(configSetup, "input", 1, max_day);
+    jsonWrite(configSetup, "input", 2, max_night);
+    jsonWrite(configSetup, "input", 3, fan_start);
+    jsonWrite(configSetup, "input", 4, fan_stop);
+    jsonWrite(configSetup, "input", 5, ten_start);
+    jsonWrite(configSetup, "input", 6, ten_stop);
     saveConfigSetup();
     printLCD(1, 0, 0, "", "  SAVE OPTIONS  ", 1000);
     printLCD(1, 0, 0, "", "                ", 0);
     server.send(200, "text/plain", "");
   });
-  httpUpdater.setup(&server);
-  server.begin();
 }
-
 //==========================================================================================================
 //                                                 RESTART ESP
 //==========================================================================================================

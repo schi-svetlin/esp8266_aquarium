@@ -10,12 +10,17 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 //static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
 WiFiUDP udp;
 
-String time_vkl[7], time_otkl[7], time_rassvet[7], time_zakat[7];
-int hour_vkl[7], min_vkl[7], hour_otkl[7], min_otkl[7], hour_rassvet[7], min_rassvet[7], hour_zakat[7], min_zakat[7];
-
+int val_rassvet = 0;
+int val_zakat = 0;
+byte nedelya, ned, selIndex;
+String date_man, time_man;
+int max_day, max_day_percent, max_night, max_night_percent, year_man;
+String time_0[7], time_1[7], time_2[7], time_3[7];
+int hour_0[7], min_0[7], hour_1[7], min_1[7], hour_2[7], min_2[7], hour_3[7], min_3[7];
+long sec_0, sec_1, sec_2, sec_3, sec_now;
+String schedule[3][10][10];
 int ds_day, ds_month, ds_year, ds_hour, ds_min, ds_sec;
-long sec_start, sec_rassvet, sec_zakat, sec_stop, sec_now;
-char datestring[20], time_now[30], date_now[30], man_time_now[30], ntp_time_now[30];
+char time_now[30], date_now[30];
 int hours, minutes, seconds, years, months, days;
 int timeZone = 5;
 unsigned int localPort = 8888;

@@ -1,25 +1,63 @@
-// ------------- Чтение значения json
-String jsonRead(String &json, String name) {
+// ------------- read JSON STRING -------------
+String jsonReadToStr(String &json, String name) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
   return root[name].as<String>();
 }
 
-String jsonRead(String &json, String name, int i) {
+String jsonReadToStr(String &json, String name, int a) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
-  return root[name][i].as<String>();
+  return root[name][a].as<String>();
 }
 
-/*
-  // ------------- Чтение значения json
-  int jsonReadtoInt(String &json, String name) {
+String jsonReadToStr(String &json, String name, int a, int b) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
-  return root[name];
-  }
-*/
-// ------------- Запись значения json String
+  return root[name][a][b].as<String>();
+}
+String jsonReadToStr(String &json, String name, int a, int b, int c) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name][a][b][c].as<String>();
+}
+// ------------- read JSON INTEGER -------------
+int jsonReadToInt(String &json, String name) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name].as<String>().toInt();
+}
+
+int jsonReadToInt(String &json, String name, int a) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name][a].as<String>().toInt();
+}
+
+int jsonReadToInt(String &json, String name, int a, int b) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name][a][b].as<String>().toInt();
+}
+// ------------- read JSON FLOAT -------------
+float jsonReadToFloat(String &json, String name) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name].as<String>().toFloat();
+}
+
+float jsonReadToFloat(String &json, String name, int a) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name][a].as<String>().toFloat();
+}
+
+float jsonReadToFloat(String &json, String name, int a, int b) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  return root[name][a][b].as<String>().toFloat();
+}
+// ------------- Запись значения json String -------------
 String jsonWrite(String &json, String name, String volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
@@ -29,16 +67,32 @@ String jsonWrite(String &json, String name, String volume) {
   return json;
 }
 
-String jsonWrite(String &json, String name, int i, String volume) {
+String jsonWrite(String &json, String name, int a, String volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
-  root[name][i] = volume;
+  root[name][a] = volume;
   json = "";
   root.printTo(json);
   return json;
 }
 
-// ------------- Запись значения json int
+String jsonWrite(String &json, String name, int a, int b, String volume) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  root[name][a][b] = volume;
+  json = "";
+  root.printTo(json);
+  return json;
+}
+String jsonWrite(String &json, String name, int a, int b, int c, String volume) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  root[name][a][b][c] = volume;
+  json = "";
+  root.printTo(json);
+  return json;
+}
+// ------------- Запись значения json Integer -------------
 String jsonWrite(String &json, String name, int volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
@@ -48,16 +102,24 @@ String jsonWrite(String &json, String name, int volume) {
   return json;
 }
 
-String jsonWrite(String &json, String name, int i, int volume) {
+String jsonWrite(String &json, String name, int a, int volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
-  root[name][i] = volume;
+  root[name][a] = volume;
   json = "";
   root.printTo(json);
   return json;
 }
 
-// ------------- Запись значения json float
+String jsonWrite(String &json, String name, int a, int b, int volume) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  root[name][a][b] = volume;
+  json = "";
+  root.printTo(json);
+  return json;
+}
+// ------------- Запись значения json float -------------
 String jsonWrite(String &json, String name, float volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
@@ -66,15 +128,24 @@ String jsonWrite(String &json, String name, float volume) {
   root.printTo(json);
   return json;
 }
-String jsonWrite(String &json, String name, int i, float volume) {
+
+String jsonWrite(String &json, String name, int a, float volume) {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& root = jsonBuffer.parseObject(json);
-  root[name][i] = volume;
+  root[name][a] = volume;
   json = "";
   root.printTo(json);
   return json;
 }
 
+String jsonWrite(String &json, String name, int a, int b, float volume) {
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(json);
+  root[name][a][b] = volume;
+  json = "";
+  root.printTo(json);
+  return json;
+}
 void saveConfigSetup () {
   writeFile("configSetup.json", configSetup );
 }

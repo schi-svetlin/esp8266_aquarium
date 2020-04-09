@@ -19,9 +19,13 @@
 #define TENPIN        D5
 #define LEDPIN        D6
 #define FANPIN        D7
-int portNumber = 49201;
+#define RELAY1PIN     D0
+#define RELAY2PIN     D8
+int port = 49201;
+int websocketPort = 81;
+
 String f_ver = "4.2";
-const char* ver = "2.9";
+const char* ver = "2.10";
 
 static const char successResponse[] PROGMEM =
   "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...\n";
@@ -31,10 +35,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 SimpleMovingAverage avg;
 ESP8266WiFiMulti WiFiMulti;
 
-ESP8266WebServer server(portNumber);
+ESP8266WebServer server(80);
 ESP8266HTTPUpdateServer httpUpdater;
 
-WebSocketsServer webSocket = WebSocketsServer(49202);
+WebSocketsServer webSocket = WebSocketsServer(websocketPort);
 File fsUploadFile;
 DNSServer dnsServer;
 OneWire  ds(ONE_WIRE_BUS);
@@ -44,29 +48,27 @@ byte tries = 11;
 IPAddress ip;
 String configSetup = "{}";
 String configChart = "{}";
-String jsonLive = "{\"temp\":\"--\",\"now\":\"--.--.----\",\"led\":\"-\",\"fan\":\"-\",\"ten\":\"-\",\"rssi\":\"-\",\"graph_changing\":\"-\"}";
+String jsonLive = "{\"temp\":\"--\",\"now\":\"--.--.----    --:--\",\"led\":\"-\",\"fan\":\"-\",\"ten\":\"-\",\"rel1\":\"-\",\"rel2\":\"-\",\"rssi\":\"-\",\"graph_changing\":\"-\"}";
 
 String clientId = "ESP8266";
-float avTemp, tempC1, tempC, temp_filtered, values_day, temp_koef, fan_stop, fan_start, ten_start, ten_stop;
+static char send_temp[15];
+float tempC1, tempC, temp_filtered, values_day, temp_koef, fan_stop, fan_start, ten_start, ten_stop;
+byte relay1_working = 0;
+byte relay2_working = 0;
 byte led_working = 0;
 byte fan_working = 0;
 byte ten_working = 0;
 byte wifi_working = 0;
 byte ws_working = 0;
 byte graph_changing = 0;
-int val_rassvet = 0;
-int val_zakat = 0;
+
 int led_bright = 0;
-int old_ds_min = 0;
-int old_ds_sec = 0;
 int randomize, rssi; 
-byte nedelya;
-String date_man, time_man;
-int brightness, max_day, max_day_percent, max_night, max_night_percent, year_man;
-unsigned long previousMillis = 0;
-int uploadProc = 0;
-int flag, hour_alarm;
-char line1[16], line2[16];
+
+unsigned long previousMillis = 0; // для таймера
+int uploadProc = 0;               // загрузка % при обновлении прошивки
+int flag, hour_alarm;             // для записи графика по времени 3-9-15-21
+char line1[16], line2[16], line2_1[16], line2_2[16];        // для вывода инфы на lcd1602
 //floor() — округление вниз
 //ceil() — округление вверх
 //round() — округление в ближайшую сторону

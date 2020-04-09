@@ -64,8 +64,7 @@ void ds18b20_measure() {
     else if (cfg == 0x40) raw = raw & ~1;
   }
   tempC = (float)raw / 16.0;
-  //Serial.print("Temp = ");
-  //Serial.println(tempC);
+  dtostrf(tempC,4, 1, send_temp);   
   prevTime = millis();  
   }
 }

@@ -1,3 +1,16 @@
+void send_values_by_websocket() {
+  sprintf(date_now, "%02i.%02i.%02i    %02i:%02i:%02i",  ds_day, ds_month, ds_year, ds_hour, ds_min, ds_sec);
+  jsonWrite(jsonLive, "temp", send_temp);
+  jsonWrite(jsonLive, "now", date_now);
+  jsonWrite(jsonLive, "led", led_bright);
+  jsonWrite(jsonLive, "fan", fan_working);
+  jsonWrite(jsonLive, "ten", ten_working);
+  jsonWrite(jsonLive, "rel1", relay1_working);
+  jsonWrite(jsonLive, "rel2", relay2_working);    
+  jsonWrite(jsonLive, "rssi", rssi);  
+  jsonWrite(jsonLive, "graph_changing", graph_changing);  
+  webSocket.broadcastTXT(jsonLive);
+}
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
   switch (type) {
     case WStype_DISCONNECTED:

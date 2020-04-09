@@ -1,54 +1,3 @@
-void handleValues() {
-  sprintf(date_now, "%02i.%02i.%02i | %02i:%02i:%02i",  ds_day, ds_month, ds_year, ds_hour, ds_min, ds_sec);
-  String send_temp = String(round(tempC1 * 100) / 100);
-  jsonWrite(jsonLive, "temp", send_temp);
-  jsonWrite(jsonLive, "now", date_now);
-  jsonWrite(jsonLive, "led", led_bright);
-  jsonWrite(jsonLive, "fan", fan_working);
-  jsonWrite(jsonLive, "ten", ten_working);
-  jsonWrite(jsonLive, "rssi", rssi);  
-  jsonWrite(jsonLive, "graph_changing", graph_changing);  
-  webSocket.broadcastTXT(jsonLive);
-}
-
-void updateValuesPeriod() {
-  float values_filtered = 0;
-  if (ds_hour > 21 || ds_hour < 3)   {
-    flag = 0;
-    hour_alarm = 3;
-  }
-  if (ds_hour > 3 && ds_hour < 9)   {
-    flag = 1;
-    hour_alarm = 9;
-  }
-  if (ds_hour > 9  && ds_hour < 15)  {
-    flag = 2;
-    hour_alarm = 15;
-  }
-  if (ds_hour > 15 && ds_hour < 21)  {
-    flag = 3;
-    hour_alarm = 21;
-  }
-  if (ds_hour == hour_alarm && tempC1 != 0.00 && flag <= 3) {
-    jsonWrite(configChart, "values_day", flag, temp_filtered);
-    saveConfigChart();
-    if (hour_alarm == 21) {
-      jsonWrite(configChart, "values_day", flag, temp_filtered);
-      saveConfigChart();
-      sprintf(time_now, "%02d.%02d.%02i",  ds_day, ds_month, ds_year);
-      for (int i = 0; i <= 3; i++) {
-        values_day += atof(jsonRead(configChart, "values_day", i).c_str());
-      }
-      values_filtered = values_day / 4;
-      updateValues(time_now, tempC1, values_filtered); 
-      graph_changing = 1;    
-    }
-    flag = 4;
-    values_day = 0;
-    values_filtered = 0;
-  }
-}
-
 void measure_t() {
   unsigned long realMillis = millis() / 1000;
   if (realMillis - previousMillis >= 1) {
@@ -59,31 +8,35 @@ void measure_t() {
     ds_hour = now.hour();
     ds_min = now.minute();
     ds_sec = now.second();
-    nedelya = now.dayOfTheWeek();
+    ned = now.dayOfTheWeek(); 
+    if (ned==0) {nedelya = 6;} else
+    {nedelya = ned-1;}      
     rssi =  WiFi.RSSI();
     //randomize = random(1500, 3100);
     //tempC = (float)randomize / 100.00;
-//    sensors.requestTemperatures();
-//    tempC = sensors.getTempC(t1);
     ds18b20_measure();
-    readJsonValues();
-    handleValues();
-    sprintf(line1, "\2:%2.2f\1C",  tempC1);   
-    if (tempC == 0.00) {
-      sprintf(line1, "\2: -ERR-");       
-    } 
-    sprintf(line2, "\6%3idBm   \3%3i%%", rssi, led_bright);
+    send_values_by_websocket();
     tempC1 = tempC + temp_koef;
     temp_filtered = avg.update((float)tempC1);
-    printLCD(2,0,0,line1,line2,0);    
-    updateZnak(4, fan_working,  12, 0);
-    updateZnak(5, ten_working,  13, 0);
-    //updateZnak(6, wifi_working, 14, 0);
-    updateZnak(7, ws_working,   15, 0);
+    if (tempC == 0.0 || tempC == 85.0) { 
+      sprintf(line1, "%02i:%02i   t: -ERR- ",ds_hour, ds_min); 
+    } else { 
+      sprintf(line1, "%02i:%02i  t:%2.1f\2C",  ds_hour, ds_min, atof(send_temp)); 
+    }
+    sprintf(line2_1, "\1%i",rssi);
+    sprintf(line2_2, "\3%i",led_bright);    
+    printLCD(2,0,0,line1,line2_1,0); 
+    printLCD(1,0,6,"",line2_2,0);        
+    updateZnak(7, relay1_working, 11, 1);
+    updateZnak(8, relay2_working, 12, 1);
+    updateZnak(4, fan_working, 13, 1);
+    updateZnak(5, ten_working, 14, 1);
+    updateZnak(6, ws_working, 15, 1);
     led_schedule();
+    relay_schedule();    
     temp_fan_regulation();
     temp_ten_regulation();
-    updateValuesPeriod();
+    update_chart_values();
     previousMillis = realMillis;
   }
 }
